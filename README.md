@@ -1,7 +1,7 @@
 # LineClown (Excel)  
 No longer integrates with Line bot and no longer specific to Clowns  
 
-Check the App.config to set input path and output file pattern  
+Check the App.config (LineClown.Excel.dll.config) to set input path and output file pattern  
   
 Loops all *.xslx in specified folder  
 files interpreted as daily monster hunt stats files  
