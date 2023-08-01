@@ -66,6 +66,8 @@ public class Program
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"Wrote summary file {strPath}");
         Console.ResetColor();
+
+        Console.ReadLine();
     }
 
     private static void PrintList(ref IDictionary<int, IList<UserRowData>> dicData)
