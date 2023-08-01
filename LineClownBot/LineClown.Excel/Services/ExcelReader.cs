@@ -11,22 +11,25 @@ public class ExcelReader
 {
     public void ProcessLoot(ref IDictionary<int, IList<UserRowData>> dicData)
     {
-        List<FileInfo> allXlsxFiles = Directory.EnumerateFiles(Settings.XlsxRoot, "*.xlsx").Select(_ => new FileInfo(_)).ToList();
+        int nbrOfProcessedFiles = 0;
+        IList<FileInfo> allXlsxFiles = Directory.EnumerateFiles(Settings.XlsxRoot, "*.xlsx").Select(path => new FileInfo(path)).ToList();
 
         foreach (FileInfo fileInfo in allXlsxFiles.OrderByDescending(_ => _.LastWriteTime))
         {
             string file = fileInfo.FullName;
-            if (file.StartsWith('~') || file.Contains("BankData"))
+            if (file.StartsWith('~') || file.Contains("BankData") || file.Contains("GuildStats"))
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"Skipping {file}");
+                Console.ResetColor();
                 continue;
             }
 
-            Console.WriteLine($"{file}");
+            Console.WriteLine($"Processing #{++nbrOfProcessedFiles},{file}");
 
             using (var package = new ExcelPackage(fileInfo))
             {
-                for (int rowY = 1; rowY < 100; rowY++)
+                for (int rowY = 1; rowY < 300; rowY++)
                 {
                     UserRowData rowData = new UserRowData();
 
@@ -72,15 +75,22 @@ public class ExcelReader
 
     public void ProcessBank(ref IDictionary<int, IList<UserRowData>> dicData)
     {
-        foreach (string file in Directory.EnumerateFiles(Settings.XlsxRoot, "*BankData.xlsx"))
+        int nbrOfProcessedFiles = 0;
+        IList<FileInfo> allXlsxFiles = Directory.EnumerateFiles(Settings.XlsxRoot, "*BankData.xlsx").Select(path => new FileInfo(path)).ToList();
+
+        foreach (FileInfo fileInfo in allXlsxFiles.OrderByDescending(_ => _.LastWriteTime))
         {
+            string file = fileInfo.FullName;
+
             if (file.StartsWith('~'))
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"Skipping {file}");
+                Console.ResetColor();
                 continue;
             }
 
-            Console.WriteLine($"{file}");
+            Console.WriteLine($"Processing #{++nbrOfProcessedFiles}, {file}");
 
             using var package = new ExcelPackage(new FileInfo(file));
             for (int rowY = 1; rowY < 300; rowY++)
@@ -141,17 +151,24 @@ public class ExcelReader
         return Convert.ToDouble(value, numberFormat);
     }
 
-    internal void ProcessGf(ref IDictionary<int, IList<UserRowData>> dicData)
+    internal void ProcessGuildFest(ref IDictionary<int, IList<UserRowData>> dicData)
     {
-        foreach (string file in Directory.EnumerateFiles(Settings.XlsxRoot, "GF *.xlsx"))
+        int nbrOfProcessedFiles = 0;
+        IList<FileInfo> allXlsxFiles = Directory.EnumerateFiles(Settings.XlsxRoot, "GF *.xlsx").Select(path => new FileInfo(path)).ToList();
+
+        foreach (FileInfo fileInfo in allXlsxFiles.OrderByDescending(_ => _.LastWriteTime))
         {
+            string file = fileInfo.FullName;
+
             if (file.StartsWith('~'))
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"Skipping {file}");
+                Console.ResetColor();
                 continue;
             }
 
-            Console.WriteLine($"{file}");
+            Console.WriteLine($"Processing #{++nbrOfProcessedFiles}, {file}");
 
             using var package = new ExcelPackage(new FileInfo(file));
             for (int rowY = 2; rowY < 200; rowY++)
@@ -174,6 +191,60 @@ public class ExcelReader
                     var gf = ParsePrefix(gfScore);
 
                     aRow.GfScore = (int)gf;
+                }
+            }
+        }
+    }
+
+    internal void ProcessGuildStats(ref IDictionary<int, IList<UserRowData>> dicData)
+    {
+        int nbrOfProcessedFiles = 0;
+        IList<FileInfo> allXlsxFiles = Directory.EnumerateFiles(Settings.XlsxRoot, "GuildStats*.xlsx").Select(path => new FileInfo(path)).ToList();
+
+        foreach (FileInfo fileInfo in allXlsxFiles.OrderByDescending(_ => _.LastWriteTime))
+        {
+            string file = fileInfo.FullName;
+
+            if (file.StartsWith('~'))
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"Skipping {file}");
+                Console.ResetColor();
+                continue;
+            }
+
+            Console.WriteLine($"Processing #{++nbrOfProcessedFiles}, {file}");
+
+            using var package = new ExcelPackage(new FileInfo(file));
+            for (int rowY = 2; rowY < 200; rowY++)
+            {
+                var cells = package.Workbook.Worksheets[0].Cells;
+                string name = cells[rowY, 1].GetValue<string>();
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    break;
+                }
+
+                var aRows = dicData.FirstOrDefault(kvp => kvp.Value.Any(urd => urd.Name.Equals(name)));
+                if (aRows.Value != null)
+                {
+                    var aRow = aRows.Value.First();
+
+                    string might = cells[rowY, 5].GetValue<string>();
+                    string kills = cells[rowY, 6].GetValue<string>();
+
+                    if (nbrOfProcessedFiles == 1)
+                    {
+                        aRow.Might1 = long.Parse(might);
+                        aRow.Kills1 = long.Parse(kills);
+                    }
+                    else if (nbrOfProcessedFiles == 2)
+                    {
+                        aRow.Might2 = long.Parse(might);
+                        aRow.Kills2 = long.Parse(kills);
+                    }
+
                 }
             }
         }

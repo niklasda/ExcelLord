@@ -35,6 +35,11 @@ public class UserRowData
 
     public double Rss { get; set; }
     public int GfScore { get; set; }
+
+    public long Kills1 { get; set; }
+    public long Kills2 { get; set; }
+    public long Might1 { get; set; }
+    public long Might2 { get; set; }
 }
 
 public static class MonsterBusPoints
@@ -43,5 +48,5 @@ public static class MonsterBusPoints
     public const int Uncommon = 5;
     public const int Rare = 20;
     public const int Epic = 50;
-    public static int Legendary = 100;
+    public const int Legendary = 100;
 }

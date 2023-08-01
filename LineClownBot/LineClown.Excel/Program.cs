@@ -10,7 +10,6 @@ namespace LineClown.Excel;
 
 public class Program
 {
-
     private static void Main()
     {
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -28,20 +27,32 @@ public class Program
         ExcelReader rd = new ExcelReader();
         ExcelWriter wr = new ExcelWriter();
 
-        Console.WriteLine("Precessing Loot");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Precessing Loot, {Settings.XlsxRoot}");
+        Console.ResetColor();
 
         rd.ProcessLoot(ref dicData);
 
-        Console.WriteLine("Precessing Bank");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Precessing Bank, *BankData.xlsx");
+        Console.ResetColor();
 
         rd.ProcessBank(ref dicData);
 
-        Console.WriteLine("Precessing GF");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Precessing GF, GF *.xlsx");
+        Console.ResetColor();
 
-        rd.ProcessGf(ref dicData);
+        rd.ProcessGuildFest(ref dicData);
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Precessing GuidStats, GuildStats*.xlsx");
+        Console.ResetColor();
+
+        rd.ProcessGuildStats(ref dicData);
 
         Console.WriteLine("-------------------------");
-        Console.WriteLine("Name, Tot, Lvl1, Lvl2, Lvl3, Lvl4, Lvl5, Pts, p2p, First, Last, RSS, GF");
+        Console.WriteLine("Name, Tot, Lvl1, Lvl2, Lvl3, Lvl4, Lvl5, Pts, p2p, First, Last, RSS, GF, Δ");
 
 
         PrintList(ref dicData);
@@ -52,9 +63,10 @@ public class Program
             
         File.WriteAllBytes(strPath, fileData);
 
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"Wrote summary file {strPath}");
+        Console.ResetColor();
     }
-        
 
     private static void PrintList(ref IDictionary<int, IList<UserRowData>> dicData)
     {
@@ -69,7 +81,7 @@ public class Program
             var totHuntL4 = value.Sum(_ => _.HuntL4);
             var totHuntL5 = value.Sum(_ => _.HuntL5);
             var totHuntPoints = value.Sum(_ => _.HuntBusPoints);
-            int totRss = (int)(value.Sum(_ => _.Rss) / 1000000);
+            int totRss = (int)(value.Sum(_ => _.Rss) / 1_000_000);
             int totGf = value.Sum(_ => _.GfScore);
 
             string totsRss = string.Empty;
@@ -82,7 +94,7 @@ public class Program
 
             if (!value.Any(_ => _.FirstHunt.Year > 2009))
             {
-                Console.WriteLine($"{name}, {totHunt},,,,,,,,,,, {totsRss}, {totGf}");
+                Console.WriteLine($"{name}, {totHunt},,,,,,,,,,,, {totsRss}, {totGf}");
 
                 continue;
             }
@@ -91,7 +103,7 @@ public class Program
             DateTime startHunt = value.Where(_ => _.FirstHunt.Year > 2009).Min(_ => _.FirstHunt);
             DateTime endHunt = value.Where(_ => _.LastHunt.Year > 2009).Max(_ => _.LastHunt);
 
-            Console.WriteLine($"{name}, {totHunt}, {totHuntL1}, {totHuntL2}, {totHuntL3}, {totHuntL4}, {totHuntL5}, {totHuntPoints}, {(hasPurchased ? "y" : "n")}, {startHunt.ToShortDateString()}, {endHunt.ToShortDateString()}, {totsRss}, {gfScore}");
+            Console.WriteLine($"{name}, {totHunt}, {totHuntL1}, {totHuntL2}, {totHuntL3}, {totHuntL4}, {totHuntL5}, {totHuntPoints}, {(hasPurchased ? "y" : "n")}, {startHunt.ToShortDateString()}, {endHunt.ToShortDateString()}, {totsRss}, {gfScore}, Δ");
         }
     }
 }

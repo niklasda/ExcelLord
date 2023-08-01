@@ -31,6 +31,7 @@ public class ExcelWriter
         workSheet.Cells[recordIndex, 11].Value = "Last";
         workSheet.Cells[recordIndex, 12].Value = "RSS";
         workSheet.Cells[recordIndex, 13].Value = "GF";
+        workSheet.Cells[recordIndex, 14].Value = "Δ Kills";
 
         recordIndex++;
 
@@ -108,8 +109,18 @@ public class ExcelWriter
             }
             workSheet.Cells[recordIndex, 13].Value = totGf;
 
+
+            long deltaKills = value.First().Kills1 - value.First().Kills2;
+            workSheet.Cells[recordIndex, 14].Style.Numberformat.Format = "@";
+            workSheet.Cells[recordIndex, 14].Value = deltaKills;
+           // workSheet.Cells[recordIndex, 15].Style.Numberformat.Format = "@";
+           // workSheet.Cells[recordIndex, 15].Value = value.First().Kills2;
+
             recordIndex++;
         }
+
+        workSheet.Row(1).Style.Font.Bold = true;
+        workSheet.Cells["A1:N1"].AutoFilter = true;
 
         workSheet.Column(1).AutoFit();
         workSheet.Column(2).AutoFit();
@@ -127,6 +138,9 @@ public class ExcelWriter
         workSheet.Column(11).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
         workSheet.Column(12).AutoFit();
         workSheet.Column(12).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        workSheet.Column(14).AutoFit();
+        workSheet.Column(14).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+      
 
         workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
@@ -156,6 +170,8 @@ public class ExcelWriter
         workSheet.Cells[recordIndex, 12].Style.Border.Top.Color.SetColor(eThemeSchemeColor.Accent1);
         workSheet.Cells[recordIndex, 13].Style.Border.Top.Style = ExcelBorderStyle.Thin;
         workSheet.Cells[recordIndex, 13].Style.Border.Top.Color.SetColor(eThemeSchemeColor.Accent1);
+        workSheet.Cells[recordIndex, 14].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+        workSheet.Cells[recordIndex, 14].Style.Border.Top.Color.SetColor(eThemeSchemeColor.Accent1);
 
         workSheet.Cells[recordIndex, 2].Formula = $"SUM($B$2:$B${recordIndex - 1})";
         workSheet.Cells[recordIndex, 3].Formula = $"SUM(C2:C{recordIndex - 1})";
@@ -164,52 +180,59 @@ public class ExcelWriter
         workSheet.Cells[recordIndex, 6].Formula = $"SUM(F2:F{recordIndex - 1})";
         workSheet.Cells[recordIndex, 7].Formula = $"SUM(G2:G{recordIndex - 1})";
 
-        workSheet.Row(1).Style.Font.Bold = true;
-        workSheet.Cells["A1:M1"].AutoFilter = true;
+        workSheet.Cells[recordIndex, 13].Formula = $"SUM(M2:M{recordIndex - 1})";
+        workSheet.Cells[recordIndex, 14].Formula = $"SUM(N2:N{recordIndex - 1})";
 
-        workSheet.Cells["O3"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-        workSheet.Cells["O3"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0xE9, 0xE0, 0xE0));
-        workSheet.Cells["O3"].Value = "Common";
-        workSheet.Cells["P3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-        workSheet.Cells["P3"].Value = $"{MonsterBusPoints.Common}p";
+       
 
-        workSheet.Cells["O4"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-        workSheet.Cells["O4"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0x51, 0xE3, 0x69));
-        workSheet.Cells["O4"].Value = "Uncommon";
-        workSheet.Cells["P4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-        workSheet.Cells["P4"].Value = $"{MonsterBusPoints.Uncommon}p";
 
-        workSheet.Cells["O5"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-        workSheet.Cells["O5"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0x5C, 0xCF, 0xF5));
-        workSheet.Cells["O5"].Value = "Rare";
-        workSheet.Cells["P5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-        workSheet.Cells["P5"].Value = $"{MonsterBusPoints.Rare}p";
+        // Column Q for misc
 
-        workSheet.Cells["O6"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-        workSheet.Cells["O6"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0xB5, 0x65, 0xB5));
-        workSheet.Cells["O6"].Value = "Epic";
-        workSheet.Cells["P6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-        workSheet.Cells["P6"].Value = $"{MonsterBusPoints.Epic}p";
+        workSheet.Cells["Q3"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        workSheet.Cells["Q3"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0xE9, 0xE0, 0xE0));
+        workSheet.Cells["Q3"].Value = "Common";
+        workSheet.Cells["R3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        workSheet.Cells["R3"].Value = $"{MonsterBusPoints.Common}p";
 
-        workSheet.Cells["O7"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-        workSheet.Cells["O7"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0xA5, 0x9A, 0x18));
-        workSheet.Cells["O7"].Value = "Legendary";
-        workSheet.Cells["P7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-        workSheet.Cells["P7"].Value = $"{MonsterBusPoints.Legendary}p";
+        workSheet.Cells["Q4"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        workSheet.Cells["Q4"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0x51, 0xE3, 0x69));
+        workSheet.Cells["Q4"].Value = "Uncommon";
+        workSheet.Cells["R4"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        workSheet.Cells["R4"].Value = $"{MonsterBusPoints.Uncommon}p";
+
+        workSheet.Cells["Q5"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        workSheet.Cells["Q5"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0x5C, 0xCF, 0xF5));
+        workSheet.Cells["Q5"].Value = "Rare";
+        workSheet.Cells["R5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        workSheet.Cells["R5"].Value = $"{MonsterBusPoints.Rare}p";
+
+        workSheet.Cells["Q6"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        workSheet.Cells["Q6"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0xB5, 0x65, 0xB5));
+        workSheet.Cells["Q6"].Value = "Epic";
+        workSheet.Cells["R6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        workSheet.Cells["R6"].Value = $"{MonsterBusPoints.Epic}p";
+
+        workSheet.Cells["Q7"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        workSheet.Cells["Q7"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(0xA5, 0x9A, 0x18));
+        workSheet.Cells["Q7"].Value = "Legendary";
+        workSheet.Cells["R7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+        workSheet.Cells["R7"].Value = $"{MonsterBusPoints.Legendary}p";
 
         workSheet.Column(14).AutoFit();
         workSheet.Column(15).AutoFit();
         workSheet.Column(16).AutoFit();
 
-        workSheet.Cells["O11"].Style.Font.Bold = true;
-        workSheet.Cells["O11"].Value = "Tools";
 
-        workSheet.Cells["O12"].Hyperlink = new Uri("https://medio.pe/dev/LM_Calc/");
-        workSheet.Cells["O12"].Value = "https://medio.pe/dev/LM_Calc/";
+        // Column Q for misc
+        workSheet.Cells["Q11"].Style.Font.Bold = true;
+        workSheet.Cells["Q11"].Value = "Tools";
 
-        workSheet.Cells["O13"].Hyperlink = new Uri("https://lordsmobile.igg.com/project/game_tool/index.php");
+        workSheet.Cells["Q12"].Hyperlink = new Uri("https://medio.pe/dev/LM_Calc/");
+        workSheet.Cells["Q12"].Value = "https://medio.pe/dev/LM_Calc/";
 
-        workSheet.Cells["O14"].Hyperlink = new Uri("https://www.lordsmobilecalculator.com/tools/troop-training/");
+        workSheet.Cells["Q13"].Hyperlink = new Uri("https://lordsmobile.igg.com/project/game_tool/index.php");
+
+        workSheet.Cells["Q14"].Hyperlink = new Uri("https://www.lordsmobilecalculator.com/tools/troop-training/");
 
         return excel.GetAsByteArray();
     }
